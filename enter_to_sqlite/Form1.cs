@@ -11,18 +11,15 @@ namespace enter_to_sqlite
     {
         DataBase db = new DataBase();
 
-        List<string> cities = new List<string>();
+        List<City> cities = new List<City>();
         public Form1()
         {
             InitializeComponent();
-
-            db.openConnection();
-            cities = db.getCities();
-
+            
 
             refreshComboBox();
-
-
+            cbDepPoint.DisplayMember = "Name";
+            cbArrPoint.DisplayMember = "Name";
             db.openConnection();
             db.getTickets();
 
@@ -38,6 +35,8 @@ namespace enter_to_sqlite
         }
         private void refreshComboBox()
         {
+            db.openConnection();
+            cities = db.getCities();
             cbDepPoint.Items.Clear();
             cbDepPoint.Items.Add("");
             cbDepPoint.SelectedIndex = 0;
@@ -171,9 +170,12 @@ namespace enter_to_sqlite
 
         private void formCities_Click(object sender, EventArgs e)
         {
-            CitiesForm citiesForm = new CitiesForm(cities);
-            citiesForm.Show();
-            refreshComboBox();
+            CitiesForm citiesForm = new CitiesForm(cities, db);
+            if(citiesForm.ShowDialog() == DialogResult.Cancel)
+            {
+                refreshComboBox();
+            }
+            
         }
     }
 }

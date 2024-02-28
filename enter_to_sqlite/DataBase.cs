@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using static System.ComponentModel.Design.ObjectSelectorEditor;
 
 
 namespace enter_to_sqlite
@@ -26,6 +28,44 @@ namespace enter_to_sqlite
             {
                 connection.Close();
             }
+        }
+        public int insertCity(string city)
+        {
+            SqliteCommand insertSQL = new SqliteCommand("INSERT INTO cities (name_city) VALUES (@param1)", connection);
+            insertSQL.CommandType = CommandType.Text;
+            insertSQL.Parameters.Add(new SqliteParameter("@param1", city));
+            insertSQL.ExecuteNonQuery();
+            return getLastRowId();
+        }
+        public void UpdateCity(int index, string updateValue)
+        {
+            SqliteCommand insertSQL = new SqliteCommand($"UPDATE cities SET name_city = \"{updateValue}\" WHERE id_city = {index}", connection);
+            insertSQL.CommandType = CommandType.Text;
+            insertSQL.ExecuteNonQuery();
+        }
+        public void DeleteCity(int index)
+        {
+            SqliteCommand deleteSQL = new SqliteCommand($"DELETE FROM cities WHERE id_city = {index}", connection);
+            deleteSQL.CommandType = CommandType.Text;
+            deleteSQL.ExecuteNonQuery();
+        }
+        public int getLastRowId()
+        {
+            int index = 0;
+            SqliteCommand command = connection.CreateCommand();
+            command.Connection = connection;
+            command.CommandText = "SELECT id_city FROM cities WHERE ROWID = last_insert_rowid()";
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        index = reader.GetInt32(0);
+                    }
+                }
+            }
+            return index;
         }
         public void getUsers()
         {
@@ -73,9 +113,9 @@ namespace enter_to_sqlite
                 }
             }
         }
-        public List<string> getCities()
+        public List<City> getCities()
         {
-            List<string> cities = new List<string>();
+            List<City> cities = new List<City>();
             using (connection)
             {
                 SqliteCommand command = connection.CreateCommand();
@@ -87,7 +127,7 @@ namespace enter_to_sqlite
                     {
                         while (reader.Read())
                         {
-                            cities.Add(reader.GetString(1));
+                            cities.Add(new City( reader.GetInt32(0),reader.GetString(1)));
                         }
                     }
                 }

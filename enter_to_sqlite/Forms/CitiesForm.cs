@@ -12,13 +12,16 @@ namespace enter_to_sqlite.Forms
 {
     public partial class CitiesForm : Form
     {
-        private List<string> list = new List<string>();
-        public CitiesForm(List<string> currentCities)
+        private List<City> list = new List<City>();
+        private DataBase db;
+        public CitiesForm(List<City> currentCities, DataBase db)
         {
             InitializeComponent();
             list = currentCities;
+            this.db = db;
             editCity.Enabled = false;
             deleteCity.Enabled = false;
+            listCities.DisplayMember = "Name";
             //listCities.Items.Clear();
             listCities.Items.AddRange(list.ToArray());
         }
@@ -29,12 +32,13 @@ namespace enter_to_sqlite.Forms
             {
                 editCity.Enabled = true;
                 deleteCity.Enabled = true;
-                textBox1.Text = list[listCities.SelectedIndex];
+                textBox1.Text = list[listCities.SelectedIndex].Name;
             }
             else
             {
                 editCity.Enabled = false;
                 deleteCity.Enabled = false;
+                textBox1.Text = "";
             }
         }
 
@@ -42,9 +46,11 @@ namespace enter_to_sqlite.Forms
         {
             if(textBox1.Text.Trim().Length > 0)
             {
-                if (!list.Contains(textBox1.Text.Trim()))
+                if (!list.Any(item=> item.Name==textBox1.Text.Trim()))
                 {
-                    list.Add(textBox1.Text.Trim());
+                    db.openConnection();
+                    int id = db.insertCity(textBox1.Text.Trim());
+                    list.Add(new City(id,textBox1.Text.Trim()));
                     listCities.Items.Add(textBox1.Text.Trim());
                 }
                 else
@@ -64,13 +70,18 @@ namespace enter_to_sqlite.Forms
             int index = listCities.SelectedIndex;
             if (textBox1.Text.Trim().Length > 0)
             {
-                if(list[listCities.SelectedIndex] == textBox1.Text.Trim())
+                if (list[listCities.SelectedIndex].Name == textBox1.Text.Trim())
                 {
-                } else if (!list.Contains(textBox1.Text.Trim()))
+                }
+                else if (!list.Any(item => item.Name == textBox1.Text.Trim()))
                 {
-                    list[listCities.SelectedIndex] = textBox1.Text.Trim();
+                    db.openConnection();
+                    db.UpdateCity(list[listCities.SelectedIndex].Id, textBox1.Text.Trim());
+                    list[listCities.SelectedIndex].Name = textBox1.Text.Trim();
                     listCities.Items[index] = textBox1.Text.Trim();
-                } else
+                    
+                }
+                else
                 {
                     MessageBox.Show("Город уже есть в списке.");
                 }
@@ -83,6 +94,10 @@ namespace enter_to_sqlite.Forms
 
         private void deleteCity_Click(object sender, EventArgs e)
         {
+            db.openConnection();
+            db.DeleteCity(list[listCities.SelectedIndex].Id);
+            list.RemoveAt(listCities.SelectedIndex);
+            listCities.Items.RemoveAt(listCities.SelectedIndex);
 
         }
     }
