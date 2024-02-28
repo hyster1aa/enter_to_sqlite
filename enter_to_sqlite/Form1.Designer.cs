@@ -96,10 +96,10 @@
             // listView1
             // 
             listView1.Columns.AddRange(new ColumnHeader[] { passengerName, passengerPassport, passengerBenefit, typeTrain, depPoint, arrPoint, timeStart, dataStart, timeTravel, trainCarNumber, trainCarPlaceNumber });
-            listView1.Dock = DockStyle.Top;
+            listView1.Dock = DockStyle.Bottom;
             listView1.FullRowSelect = true;
             listView1.GridLines = true;
-            listView1.Location = new Point(3, 3);
+            listView1.Location = new Point(3, 92);
             listView1.Name = "listView1";
             listView1.Size = new Size(813, 352);
             listView1.TabIndex = 7;
@@ -210,21 +210,22 @@
             // 
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
-            tabControl1.Dock = DockStyle.Bottom;
-            tabControl1.Location = new Point(0, 82);
+            tabControl1.Dock = DockStyle.Fill;
+            tabControl1.Location = new Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(827, 380);
+            tabControl1.Size = new Size(827, 475);
             tabControl1.TabIndex = 14;
             tabControl1.SelectedIndexChanged += tabControl1_SelectedIndexChanged;
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(groupBox1);
             tabPage1.Controls.Add(listView1);
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(819, 352);
+            tabPage1.Size = new Size(819, 447);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Билеты";
             tabPage1.UseVisualStyleBackColor = true;
@@ -235,7 +236,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(819, 352);
+            tabPage2.Size = new Size(819, 447);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Расписание";
             tabPage2.UseVisualStyleBackColor = true;
@@ -246,7 +247,7 @@
             listView2.Dock = DockStyle.Fill;
             listView2.Location = new Point(3, 3);
             listView2.Name = "listView2";
-            listView2.Size = new Size(813, 346);
+            listView2.Size = new Size(813, 441);
             listView2.TabIndex = 0;
             listView2.UseCompatibleStateImageBehavior = false;
             listView2.View = View.Details;
@@ -281,10 +282,10 @@
             groupBox1.Controls.Add(label3);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(benefitCheck);
-            groupBox1.Dock = DockStyle.Bottom;
-            groupBox1.Location = new Point(0, -5);
+            groupBox1.Dock = DockStyle.Top;
+            groupBox1.Location = new Point(3, 3);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(827, 87);
+            groupBox1.Size = new Size(813, 87);
             groupBox1.TabIndex = 15;
             groupBox1.TabStop = false;
             // 
@@ -292,8 +293,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(827, 462);
-            Controls.Add(groupBox1);
+            ClientSize = new Size(827, 475);
             Controls.Add(tabControl1);
             Controls.Add(label2);
             Name = "Form1";
