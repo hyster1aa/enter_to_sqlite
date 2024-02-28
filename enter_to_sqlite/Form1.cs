@@ -3,6 +3,7 @@ using Aspose.Cells;
 using System.Text;
 using System.Runtime.CompilerServices;
 using enter_to_sqlite.UI.Diaglos;
+using enter_to_sqlite.Forms;
 
 namespace enter_to_sqlite
 {
@@ -18,14 +19,8 @@ namespace enter_to_sqlite
             db.openConnection();
             cities = db.getCities();
 
-            cbDepPoint.Items.Add("");
-            cbDepPoint.SelectedIndex = 0;
-            cbDepPoint.Items.AddRange(cities.ToArray());
 
-            cbArrPoint.Items.Add("");
-            cbArrPoint.Items.AddRange(cities.ToArray());
-            cbArrPoint.SelectedIndex = 0;
-
+            refreshComboBox();
 
 
             db.openConnection();
@@ -41,7 +36,18 @@ namespace enter_to_sqlite
             listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
         }
+        private void refreshComboBox()
+        {
+            cbDepPoint.Items.Clear();
+            cbDepPoint.Items.Add("");
+            cbDepPoint.SelectedIndex = 0;
+            cbDepPoint.Items.AddRange(cities.ToArray());
 
+            cbArrPoint.Items.Clear();
+            cbArrPoint.Items.Add("");
+            cbArrPoint.Items.AddRange(cities.ToArray());
+            cbArrPoint.SelectedIndex = 0;
+        }
         private void initSchedule(List<schedule> schedule)
         {
             foreach (var item in schedule)
@@ -161,6 +167,13 @@ namespace enter_to_sqlite
                                        );
             TicketInformation ticketForm = new TicketInformation(ticket);
             ticketForm.Show();
+        }
+
+        private void formCities_Click(object sender, EventArgs e)
+        {
+            CitiesForm citiesForm = new CitiesForm(cities);
+            citiesForm.Show();
+            refreshComboBox();
         }
     }
 }

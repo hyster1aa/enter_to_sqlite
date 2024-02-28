@@ -46,11 +46,11 @@
             label3 = new Label();
             label4 = new Label();
             tbDateTravelMask = new MaskedTextBox();
-            createExcel = new Button();
             cbDepPoint = new ComboBox();
             cbArrPoint = new ComboBox();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            groupBox1 = new GroupBox();
             tabPage2 = new TabPage();
             listView2 = new ListView();
             scheduleTypeTrain = new ColumnHeader();
@@ -58,11 +58,18 @@
             scheduleTimeStart = new ColumnHeader();
             schDepPoint = new ColumnHeader();
             schArrPoint = new ColumnHeader();
-            groupBox1 = new GroupBox();
+            panel1 = new Panel();
+            formCities = new Button();
+            formPaths = new Button();
+            formSchedule = new Button();
+            createExcel = new Button();
+            formUsers = new Button();
+            formTickets = new Button();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
-            tabPage2.SuspendLayout();
             groupBox1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // benefitCheck
@@ -99,9 +106,9 @@
             listView1.Dock = DockStyle.Bottom;
             listView1.FullRowSelect = true;
             listView1.GridLines = true;
-            listView1.Location = new Point(3, 92);
+            listView1.Location = new Point(3, 119);
             listView1.Name = "listView1";
-            listView1.Size = new Size(813, 352);
+            listView1.Size = new Size(813, 325);
             listView1.TabIndex = 7;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.Details;
@@ -178,16 +185,6 @@
             tbDateTravelMask.TabIndex = 10;
             tbDateTravelMask.TextChanged += tbDateTravelMask_TextChanged;
             // 
-            // createExcel
-            // 
-            createExcel.Location = new Point(660, 11);
-            createExcel.Name = "createExcel";
-            createExcel.Size = new Size(75, 23);
-            createExcel.TabIndex = 11;
-            createExcel.Text = "Отчет";
-            createExcel.UseVisualStyleBackColor = true;
-            createExcel.Click += createExcel_Click;
-            // 
             // cbDepPoint
             // 
             cbDepPoint.FormattingEnabled = true;
@@ -230,8 +227,27 @@
             tabPage1.Text = "Билеты";
             tabPage1.UseVisualStyleBackColor = true;
             // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(formTickets);
+            groupBox1.Controls.Add(formUsers);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(cbDepPoint);
+            groupBox1.Controls.Add(cbArrPoint);
+            groupBox1.Controls.Add(tbDateTravelMask);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(label4);
+            groupBox1.Controls.Add(benefitCheck);
+            groupBox1.Dock = DockStyle.Top;
+            groupBox1.Location = new Point(3, 3);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(813, 110);
+            groupBox1.TabIndex = 15;
+            groupBox1.TabStop = false;
+            // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(panel1);
             tabPage2.Controls.Add(listView2);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
@@ -244,10 +260,10 @@
             // listView2
             // 
             listView2.Columns.AddRange(new ColumnHeader[] { scheduleTypeTrain, scheduleDateStart, scheduleTimeStart, schDepPoint, schArrPoint });
-            listView2.Dock = DockStyle.Fill;
-            listView2.Location = new Point(3, 3);
+            listView2.Dock = DockStyle.Bottom;
+            listView2.Location = new Point(3, 103);
             listView2.Name = "listView2";
-            listView2.Size = new Size(813, 441);
+            listView2.Size = new Size(813, 341);
             listView2.TabIndex = 0;
             listView2.UseCompatibleStateImageBehavior = false;
             listView2.View = View.Details;
@@ -272,22 +288,72 @@
             // 
             schArrPoint.Text = "Пункт прибытия";
             // 
-            // groupBox1
+            // panel1
             // 
-            groupBox1.Controls.Add(label1);
-            groupBox1.Controls.Add(cbDepPoint);
-            groupBox1.Controls.Add(createExcel);
-            groupBox1.Controls.Add(cbArrPoint);
-            groupBox1.Controls.Add(tbDateTravelMask);
-            groupBox1.Controls.Add(label3);
-            groupBox1.Controls.Add(label4);
-            groupBox1.Controls.Add(benefitCheck);
-            groupBox1.Dock = DockStyle.Top;
-            groupBox1.Location = new Point(3, 3);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(813, 87);
-            groupBox1.TabIndex = 15;
-            groupBox1.TabStop = false;
+            panel1.Controls.Add(createExcel);
+            panel1.Controls.Add(formSchedule);
+            panel1.Controls.Add(formPaths);
+            panel1.Controls.Add(formCities);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(3, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(813, 94);
+            panel1.TabIndex = 1;
+            // 
+            // formCities
+            // 
+            formCities.Location = new Point(5, 3);
+            formCities.Name = "formCities";
+            formCities.Size = new Size(122, 40);
+            formCities.TabIndex = 0;
+            formCities.Text = "Управление списком городов";
+            formCities.UseVisualStyleBackColor = true;
+            formCities.Click += formCities_Click;
+            // 
+            // formPaths
+            // 
+            formPaths.Location = new Point(5, 49);
+            formPaths.Name = "formPaths";
+            formPaths.Size = new Size(122, 40);
+            formPaths.TabIndex = 1;
+            formPaths.Text = "Управление маршрутами";
+            formPaths.UseVisualStyleBackColor = true;
+            // 
+            // formSchedule
+            // 
+            formSchedule.Location = new Point(133, 3);
+            formSchedule.Name = "formSchedule";
+            formSchedule.Size = new Size(122, 40);
+            formSchedule.TabIndex = 2;
+            formSchedule.Text = "Управление расписанием";
+            formSchedule.UseVisualStyleBackColor = true;
+            // 
+            // createExcel
+            // 
+            createExcel.Location = new Point(688, 3);
+            createExcel.Name = "createExcel";
+            createExcel.Size = new Size(122, 40);
+            createExcel.TabIndex = 12;
+            createExcel.Text = "Отчет";
+            createExcel.UseVisualStyleBackColor = true;
+            // 
+            // formUsers
+            // 
+            formUsers.Location = new Point(689, 15);
+            formUsers.Name = "formUsers";
+            formUsers.Size = new Size(121, 43);
+            formUsers.TabIndex = 14;
+            formUsers.Text = "Управление пользователями";
+            formUsers.UseVisualStyleBackColor = true;
+            // 
+            // formTickets
+            // 
+            formTickets.Location = new Point(689, 64);
+            formTickets.Name = "formTickets";
+            formTickets.Size = new Size(121, 40);
+            formTickets.TabIndex = 15;
+            formTickets.Text = "Управление билетами";
+            formTickets.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -300,9 +366,10 @@
             Text = "Form1";
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
-            tabPage2.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -326,7 +393,6 @@
         private Label label3;
         private Label label4;
         private MaskedTextBox tbDateTravelMask;
-        private Button createExcel;
         private ComboBox cbDepPoint;
         private ComboBox cbArrPoint;
         private TabControl tabControl1;
@@ -339,5 +405,12 @@
         private ColumnHeader schDepPoint;
         private ColumnHeader schArrPoint;
         private GroupBox groupBox1;
+        private Button formUsers;
+        private Panel panel1;
+        private Button createExcel;
+        private Button formSchedule;
+        private Button formPaths;
+        private Button formCities;
+        private Button formTickets;
     }
 }
