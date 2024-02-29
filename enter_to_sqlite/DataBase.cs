@@ -12,8 +12,7 @@ namespace enter_to_sqlite
 {
     public class DataBase
     {
-        SqliteConnection connection = new SqliteConnection("DataSource=haha.db");
-
+        SqliteConnection connection = new SqliteConnection("DataSource=myTodoList.db");
         public List<Passenger> passengers = new List<Passenger>();
         public List<Ticket> tickets = new List<Ticket>();
         public void openConnection()
@@ -69,7 +68,6 @@ namespace enter_to_sqlite
             initTable.ExecuteNonQuery();
             closeConnection();
         }
-
         private void initRoutes()
         {
             openConnection();
@@ -159,7 +157,7 @@ namespace enter_to_sqlite
                     {
                         while (reader.Read())
                         {
-                            Passenger passenger = new Passenger(reader.GetString(1),reader.GetString(2),reader.GetBoolean(3));
+                            Passenger passenger = new Passenger(reader.GetInt32(0),reader.GetString(1),reader.GetString(2),reader.GetBoolean(3));
                             passengers.Add(passenger);
                         }
                     }
@@ -167,7 +165,7 @@ namespace enter_to_sqlite
             }
         }
 
-        public List<schedule> schedule = new List<schedule>();
+        public List<ScheduleItem> schedule = new List<ScheduleItem>();
         public void getSchedule ()
         {
             using (connection)
@@ -175,7 +173,7 @@ namespace enter_to_sqlite
                 SqliteCommand command = connection.CreateCommand();
                 command.Connection = connection;
                 command.CommandText = "SELECT schedule.type_train, schedule.date_start, schedule.time_start, " +
-                                            "dep_city.name_city AS dep_city_name, arr_city.name_city AS arr_city_name, schedule.time_travel " +
+                                            "dep_city.name_city AS dep_city_name, arr_city.name_city AS arr_city_name, schedule.time_travel, Routes.id_route, schedule.id_travel " +
                                         "FROM schedule " +
                                             "INNER JOIN Routes ON schedule.id_route = Routes.id_route " +
                                             "LEFT JOIN cities AS dep_city ON Routes.dep_point = dep_city.id_city " +
@@ -186,7 +184,7 @@ namespace enter_to_sqlite
                     {
                         while (reader.Read())
                         {
-                            schedule.Add(new schedule (reader.GetString(0),reader.GetString(3), reader.GetString(4),reader.GetString(2), reader.GetString(1),reader.GetString(5)));
+                            schedule.Add(new ScheduleItem (reader.GetInt32(7),reader.GetString(0), new Routes(reader.GetInt32(6),reader.GetString(3), reader.GetString(4)),reader.GetString(2), reader.GetString(1),reader.GetString(5)));
                         }
                     }
                 }
@@ -220,9 +218,21 @@ namespace enter_to_sqlite
             {
                 SqliteCommand command = connection.CreateCommand();
                 command.Connection = connection;
-                command.CommandText = "SELECT passengers.full_name_p, passengers.passport, passengers.benefit, schedule.type_train, " +
-                                            "dep_city.name_city AS dep_city_name, arr_city.name_city AS arr_city_name,schedule.time_start, " +
-                                            "schedule.date_start, schedule.time_travel, tickets.car_number, tickets.place_number " +
+                command.CommandText = "SELECT passengers.full_name_p, " + //0
+                                        "passengers.passport, " + //1
+                                        "passengers.benefit, " + //2
+                                        "schedule.type_train, " + //3
+                                            "dep_city.name_city AS dep_city_name, " + //4
+                                            "arr_city.name_city AS arr_city_name, " + //5
+                                            "schedule.time_start, " + //6
+                                            "schedule.date_start, " + //7
+                                            "schedule.time_travel, " + //8
+                                            "tickets.car_number, " + //9
+                                            "tickets.place_number," + //10
+                                            " Routes.id_route, " + //11
+                                            "schedule.id_travel, " + //12
+                                            "tickets.id_ticket, " + //13
+                                            "passengers.id_p " + //14
                                         "FROM tickets " +
                                             "INNER JOIN passengers ON tickets.id_p = passengers.id_p " +
                                             "INNER JOIN schedule ON tickets.id_travel = schedule.id_travel " +
@@ -235,8 +245,9 @@ namespace enter_to_sqlite
                     {
                         while (reader.Read())
                         {
-                            Ticket ticket = new Ticket( new Passenger( reader.GetString(0), reader.GetString(1), reader.GetBoolean(2) )
-                                ,new schedule( reader.GetString(3), reader.GetString(4), reader.GetString(5),reader.GetString(6),reader.GetString(7),reader.GetString(8) )
+                            Ticket ticket = new Ticket( reader.GetInt32(13),
+                                new Passenger( reader.GetInt32(14), reader.GetString(0), reader.GetString(1), reader.GetBoolean(2) ),
+                                new ScheduleItem( reader.GetInt32(12),reader.GetString(3), new Routes(reader.GetInt32(11),reader.GetString(4),reader.GetString(5)),reader.GetString(6),reader.GetString(7), reader.GetString(8) )
                                 ,reader.GetInt32(9),reader.GetInt32(10));
                             tickets.Add(ticket);
                         }

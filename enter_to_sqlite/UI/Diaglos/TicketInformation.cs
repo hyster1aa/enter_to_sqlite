@@ -20,8 +20,8 @@ namespace enter_to_sqlite.UI.Diaglos
             label5.Text = ticketInformation.passenger.benefit ? "Присутствует" : "Отсутствует";
             label15.Text = $"Вагон №{ticketInformation.trainCarNumber}";
             label17.Text = $"Место №{ticketInformation.trainCarPlaceNumber}";
-            label7.Text = ticketInformation.travelInformation.depPoint;
-            label9.Text = ticketInformation.travelInformation.arrPoint;
+            label7.Text = ticketInformation.travelInformation.routes.depPoint;
+            label9.Text = ticketInformation.travelInformation.routes.arrPoint;
             label11.Text = ticketInformation.travelInformation.dateStart;
             label13.Text = ticketInformation.travelInformation.typeTrain;
             label20.Text = ticketInformation.travelInformation.timeStart;
