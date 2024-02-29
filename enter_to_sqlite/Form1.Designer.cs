@@ -51,20 +51,20 @@
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             groupBox1 = new GroupBox();
+            formTickets = new Button();
+            formUsers = new Button();
             tabPage2 = new TabPage();
+            panel1 = new Panel();
+            createExcel = new Button();
+            formSchedule = new Button();
+            formPaths = new Button();
+            formCities = new Button();
             listView2 = new ListView();
             scheduleTypeTrain = new ColumnHeader();
             scheduleDateStart = new ColumnHeader();
             scheduleTimeStart = new ColumnHeader();
             schDepPoint = new ColumnHeader();
             schArrPoint = new ColumnHeader();
-            panel1 = new Panel();
-            formCities = new Button();
-            formPaths = new Button();
-            formSchedule = new Button();
-            createExcel = new Button();
-            formUsers = new Button();
-            formTickets = new Button();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox1.SuspendLayout();
@@ -245,6 +245,24 @@
             groupBox1.TabIndex = 15;
             groupBox1.TabStop = false;
             // 
+            // formTickets
+            // 
+            formTickets.Location = new Point(689, 64);
+            formTickets.Name = "formTickets";
+            formTickets.Size = new Size(121, 40);
+            formTickets.TabIndex = 15;
+            formTickets.Text = "Управление билетами";
+            formTickets.UseVisualStyleBackColor = true;
+            // 
+            // formUsers
+            // 
+            formUsers.Location = new Point(689, 15);
+            formUsers.Name = "formUsers";
+            formUsers.Size = new Size(121, 43);
+            formUsers.TabIndex = 14;
+            formUsers.Text = "Управление пользователями";
+            formUsers.UseVisualStyleBackColor = true;
+            // 
             // tabPage2
             // 
             tabPage2.Controls.Add(panel1);
@@ -256,6 +274,56 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Расписание";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(createExcel);
+            panel1.Controls.Add(formSchedule);
+            panel1.Controls.Add(formPaths);
+            panel1.Controls.Add(formCities);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(3, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(813, 94);
+            panel1.TabIndex = 1;
+            // 
+            // createExcel
+            // 
+            createExcel.Location = new Point(688, 3);
+            createExcel.Name = "createExcel";
+            createExcel.Size = new Size(122, 40);
+            createExcel.TabIndex = 12;
+            createExcel.Text = "Отчет";
+            createExcel.UseVisualStyleBackColor = true;
+            // 
+            // formSchedule
+            // 
+            formSchedule.Location = new Point(133, 3);
+            formSchedule.Name = "formSchedule";
+            formSchedule.Size = new Size(122, 40);
+            formSchedule.TabIndex = 2;
+            formSchedule.Text = "Управление расписанием";
+            formSchedule.UseVisualStyleBackColor = true;
+            // 
+            // formPaths
+            // 
+            formPaths.Location = new Point(5, 49);
+            formPaths.Name = "formPaths";
+            formPaths.Size = new Size(122, 40);
+            formPaths.TabIndex = 1;
+            formPaths.Text = "Управление маршрутами";
+            formPaths.UseVisualStyleBackColor = true;
+            formPaths.Click += formPaths_Click;
+            // 
+            // formCities
+            // 
+            formCities.Location = new Point(5, 3);
+            formCities.Name = "formCities";
+            formCities.Size = new Size(122, 40);
+            formCities.TabIndex = 0;
+            formCities.Text = "Управление списком городов";
+            formCities.UseVisualStyleBackColor = true;
+            formCities.Click += formCities_Click;
             // 
             // listView2
             // 
@@ -287,73 +355,6 @@
             // schArrPoint
             // 
             schArrPoint.Text = "Пункт прибытия";
-            // 
-            // panel1
-            // 
-            panel1.Controls.Add(createExcel);
-            panel1.Controls.Add(formSchedule);
-            panel1.Controls.Add(formPaths);
-            panel1.Controls.Add(formCities);
-            panel1.Dock = DockStyle.Top;
-            panel1.Location = new Point(3, 3);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(813, 94);
-            panel1.TabIndex = 1;
-            // 
-            // formCities
-            // 
-            formCities.Location = new Point(5, 3);
-            formCities.Name = "formCities";
-            formCities.Size = new Size(122, 40);
-            formCities.TabIndex = 0;
-            formCities.Text = "Управление списком городов";
-            formCities.UseVisualStyleBackColor = true;
-            formCities.Click += formCities_Click;
-            // 
-            // formPaths
-            // 
-            formPaths.Location = new Point(5, 49);
-            formPaths.Name = "formPaths";
-            formPaths.Size = new Size(122, 40);
-            formPaths.TabIndex = 1;
-            formPaths.Text = "Управление маршрутами";
-            formPaths.UseVisualStyleBackColor = true;
-            // 
-            // formSchedule
-            // 
-            formSchedule.Location = new Point(133, 3);
-            formSchedule.Name = "formSchedule";
-            formSchedule.Size = new Size(122, 40);
-            formSchedule.TabIndex = 2;
-            formSchedule.Text = "Управление расписанием";
-            formSchedule.UseVisualStyleBackColor = true;
-            // 
-            // createExcel
-            // 
-            createExcel.Location = new Point(688, 3);
-            createExcel.Name = "createExcel";
-            createExcel.Size = new Size(122, 40);
-            createExcel.TabIndex = 12;
-            createExcel.Text = "Отчет";
-            createExcel.UseVisualStyleBackColor = true;
-            // 
-            // formUsers
-            // 
-            formUsers.Location = new Point(689, 15);
-            formUsers.Name = "formUsers";
-            formUsers.Size = new Size(121, 43);
-            formUsers.TabIndex = 14;
-            formUsers.Text = "Управление пользователями";
-            formUsers.UseVisualStyleBackColor = true;
-            // 
-            // formTickets
-            // 
-            formTickets.Location = new Point(689, 64);
-            formTickets.Name = "formTickets";
-            formTickets.Size = new Size(121, 40);
-            formTickets.TabIndex = 15;
-            formTickets.Text = "Управление билетами";
-            formTickets.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

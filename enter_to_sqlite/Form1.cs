@@ -4,6 +4,7 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using enter_to_sqlite.UI.Diaglos;
 using enter_to_sqlite.Forms;
+using enter_to_sqlite.UI.Forms;
 
 namespace enter_to_sqlite
 {
@@ -15,7 +16,7 @@ namespace enter_to_sqlite
         public Form1()
         {
             InitializeComponent();
-            
+            db.initTables();
 
             refreshComboBox();
             cbDepPoint.DisplayMember = "Name";
@@ -171,11 +172,20 @@ namespace enter_to_sqlite
         private void formCities_Click(object sender, EventArgs e)
         {
             CitiesForm citiesForm = new CitiesForm(cities, db);
-            if(citiesForm.ShowDialog() == DialogResult.Cancel)
+            if (citiesForm.ShowDialog() == DialogResult.Cancel)
             {
                 refreshComboBox();
             }
-            
+
+        }
+
+        private void formPaths_Click(object sender, EventArgs e)
+        {
+            PathForm pathsForm = new PathForm();
+            if (pathsForm.ShowDialog() == DialogResult.Cancel)
+            {
+
+            }
         }
     }
 }

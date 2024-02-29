@@ -12,7 +12,7 @@ namespace enter_to_sqlite
 {
     public class DataBase
     {
-        SqliteConnection connection = new SqliteConnection("DataSource=myTodoList.db");
+        SqliteConnection connection = new SqliteConnection("DataSource=haha.db");
 
         public List<Passenger> passengers = new List<Passenger>();
         public List<Ticket> tickets = new List<Ticket>();
@@ -28,6 +28,85 @@ namespace enter_to_sqlite
             {
                 connection.Close();
             }
+        }
+        public void initTables()
+        {
+            initCities();
+            initUsers();
+            initRoutes();
+            initSchedule();
+            initTickets();
+        }
+        private void initTickets()
+        {
+            openConnection();
+            SqliteCommand initTable = new SqliteCommand("CREATE TABLE IF NOT EXISTS " +
+                "\"tickets\" (\r\n\t\"id_ticket\"\tINTEGER NOT NULL," +
+                "\r\n\t\"id_travel\"\tINTEGER NOT NULL," +
+                "\r\n\t\"id_p\"\tINTEGER NOT NULL," +
+                "\r\n\t\"car_number\"\tINTEGER NOT NULL," +
+                "\r\n\t\"place_number\"\tINTEGER NOT NULL," +
+                "\r\n\tFOREIGN KEY(\"id_p\") REFERENCES \"passengers\"(\"id_p\")" +
+                ",\r\n\tFOREIGN KEY(\"id_travel\") REFERENCES \"schedule\"(\"id_travel\")," +
+                "\r\n\tPRIMARY KEY(\"id_ticket\" AUTOINCREMENT)\r\n);", connection);
+            initTable.CommandType = CommandType.Text;
+            initTable.ExecuteNonQuery();
+            closeConnection();
+        }
+        private void  initSchedule()
+        {
+            openConnection();
+            SqliteCommand initTable = new SqliteCommand("CREATE TABLE IF NOT EXISTS \"schedule\" " +
+                "(\r\n\t\"id_travel\"\tINTEGER NOT NULL," +
+                "\r\n\t\"id_train\"\tINTEGER NOT NULL," +
+                "\r\n\t\"id_route\"\tINTEGER," +
+                "\r\n\t\"type_train\"\tTEXT NOT NULL," +
+                "\r\n\t\"time_start\"\tTEXT NOT NULL," +
+                "\r\n\t\"time_travel\"\tTEXT NOT NULL," +
+                "\r\n\t\"date_start\"\tTEXT NOT NULL," +
+                "\r\n\tPRIMARY KEY(\"id_travel\" AUTOINCREMENT)\r\n);", connection);
+            initTable.CommandType = CommandType.Text;
+            initTable.ExecuteNonQuery();
+            closeConnection();
+        }
+
+        private void initRoutes()
+        {
+            openConnection();
+            SqliteCommand initTable = new SqliteCommand("CREATE TABLE IF NOT EXISTS \"Routes\" " +
+                "(\r\n\t\"id_route\"\tINTEGER NOT NULL," +
+                "\r\n\t\"dep_point\"\tINTEGER NOT NULL," +
+                "\r\n\t\"arr_point\"\tINTEGER NOT NULL," +
+                "\r\n\tFOREIGN KEY(\"arr_point\") REFERENCES \"cities\"(\"id_city\")," +
+                "\r\n\tFOREIGN KEY(\"dep_point\") REFERENCES \"cities\"(\"id_city\")," +
+                "\r\n\tPRIMARY KEY(\"id_route\" AUTOINCREMENT)\r\n);", connection);
+            initTable.CommandType = CommandType.Text;
+            initTable.ExecuteNonQuery();
+            closeConnection();
+        }
+        private void initCities()
+        {
+            openConnection();
+            SqliteCommand initTable = new SqliteCommand("CREATE TABLE IF NOT EXISTS \"cities\" " +
+                "(\r\n\t\"id_city\"\tINTEGER NOT NULL," +
+                "\r\n\t\"name_city\"\tINTEGER NOT NULL," +
+                "\r\n\tPRIMARY KEY(\"id_city\" AUTOINCREMENT)\r\n);", connection);
+            initTable.CommandType = CommandType.Text;
+            initTable.ExecuteNonQuery();
+            closeConnection();
+        }
+        private void initUsers()
+        {
+            openConnection();
+            SqliteCommand initTable = new SqliteCommand("CREATE TABLE IF NOT EXISTS \"passengers\" " +
+                "(\r\n\t\"id_p\"\tINTEGER NOT NULL," +
+                "\r\n\t\"full_name_p\"\tTEXT NOT NULL," +
+                "\r\n\t\"passport\"\tTEXT NOT NULL UNIQUE," +
+                "\r\n\t\"benefit\"\tBOOLEAN NOT NULL DEFAULT FALSE," +
+                "\r\n\tPRIMARY KEY(\"id_p\" AUTOINCREMENT)\r\n);", connection);
+            initTable.CommandType = CommandType.Text;
+            initTable.ExecuteNonQuery();
+            closeConnection();
         }
         public int insertCity(string city)
         {
