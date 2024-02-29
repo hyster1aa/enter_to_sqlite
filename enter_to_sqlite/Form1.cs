@@ -13,31 +13,37 @@ namespace enter_to_sqlite
         DataBase db = new DataBase();
 
         List<City> cities = new List<City>();
+        List<Passenger> passengers = new List<Passenger>();
+        List<ScheduleItem> schedule = new List<ScheduleItem>();
+        List<Ticket> tickets = new List<Ticket>();
         public Form1()
         {
             InitializeComponent();
             db.initTables();
 
-            refreshComboBox();
+            db.openConnection();
+            cities = db.getCities();
+            refreshComboBox(cities);
             cbDepPoint.DisplayMember = "Name";
             cbArrPoint.DisplayMember = "Name";
+
             db.openConnection();
             db.getTickets();
-
-
-            initListView(db.tickets);
+            tickets = db.tickets;
+            initListView(tickets);
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
             db.openConnection();
             db.getSchedule();
-            initSchedule(db.schedule);
+            schedule = db.schedule;
+            initSchedule(schedule);
             listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
         }
-        private void refreshComboBox()
+        private void refreshComboBox(List<City> cities)
         {
             db.openConnection();
-            cities = db.getCities();
+
             cbDepPoint.Items.Clear();
             cbDepPoint.Items.Add("");
             cbDepPoint.SelectedIndex = 0;
@@ -48,11 +54,11 @@ namespace enter_to_sqlite
             cbArrPoint.Items.AddRange(cities.ToArray());
             cbArrPoint.SelectedIndex = 0;
         }
-        private void initSchedule(List<schedule> schedule)
+        private void initSchedule(List<ScheduleItem> schedule)
         {
             foreach (var item in schedule)
             {
-                ListViewItem rowlv = new ListViewItem(new[] { item.typeTrain, item.dateStart, item.timeStart, item.depPoint, item.arrPoint });
+                ListViewItem rowlv = new ListViewItem(new[] { item.typeTrain, item.dateStart, item.timeStart, item.routes.depPoint, item.routes.arrPoint });
                 listView2.Items.Add(rowlv);
             }
         }
@@ -62,7 +68,7 @@ namespace enter_to_sqlite
             {
                 ListViewItem rowLv = new ListViewItem(new[] {ticket.passenger.full_name,ticket.passenger.passport,
                 ticket.passenger.benefit ? "Да" : "Нет", ticket.travelInformation.typeTrain,
-                ticket.travelInformation.depPoint,ticket.travelInformation.arrPoint, ticket.travelInformation.timeStart,
+                ticket.travelInformation.routes.depPoint,ticket.travelInformation.routes.arrPoint, ticket.travelInformation.timeStart,
                 ticket.travelInformation.dateStart, ticket.travelInformation.timeTravel,
                 ticket.trainCarNumber.ToString(), ticket.trainCarPlaceNumber.ToString() });
                 listView1.Items.Add(rowLv);
@@ -73,8 +79,8 @@ namespace enter_to_sqlite
         {
             listView1.Items.Clear();
             List<Ticket> tickets = new List<Ticket>();
-            foreach (var item in db.tickets.Where(item => item.travelInformation.depPoint.Contains(cbDepPoint.SelectedItem.ToString())
-                                                    && item.travelInformation.arrPoint.Contains(cbArrPoint.SelectedItem.ToString())
+            foreach (var item in db.tickets.Where(item => item.travelInformation.routes.depPoint.Contains(cbDepPoint.SelectedItem.ToString())
+                                                    && item.travelInformation.routes.arrPoint.Contains(cbArrPoint.SelectedItem.ToString())
                                                     && (tbDateTravelMask.Text.StartsWith(' ') ? (item.travelInformation.dateStart.Contains(""))
                                                             : (item.travelInformation.dateStart.Contains(tbDateTravelMask.Text)))
                                                 ))
@@ -109,6 +115,7 @@ namespace enter_to_sqlite
 
         private void cbDepPoint_SelectedIndexChanged(object sender, EventArgs e)
         {
+            MessageBox.Show("asfa");
             refreshListViewFilter();
         }
 
@@ -155,16 +162,30 @@ namespace enter_to_sqlite
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             var lv = listView1.SelectedItems[0];
-            Ticket ticket = new Ticket(new Passenger(
-                                                lv.SubItems[0].Text, lv.SubItems[1].Text,
-                                                lv.SubItems[2].Text.Contains("Да") ? true : false),
-                                        new schedule(
-                                                lv.SubItems[3].Text, lv.SubItems[4].Text,
-                                                lv.SubItems[5].Text, lv.SubItems[6].Text,
-                                                lv.SubItems[7].Text, lv.SubItems[8].Text),
-                                        int.Parse(lv.SubItems[9].Text),
-                                        int.Parse(lv.SubItems[10].Text)
-                                       );
+            Ticket ticket = new Ticket(
+                        tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].id_ticket,
+                        new Passenger(
+                                    tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].passenger.id_p,
+                                    lv.SubItems[0].Text, lv.SubItems[1].Text,
+                                    lv.SubItems[2].Text.Contains("Да") ? true : false
+                                ),
+                        new ScheduleItem(
+                                tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.id,
+                                lv.SubItems[3].Text, 
+                                    new Routes(
+                                        tickets[listView1.Items
+                                            .IndexOf(listView1.SelectedItems[0])]
+                                            .travelInformation.routes.id_route,
+                                        lv.SubItems[4].Text,
+                                        lv.SubItems[5].Text
+                                    ), 
+                                lv.SubItems[6].Text,
+                                lv.SubItems[7].Text,
+                                lv.SubItems[8].Text
+                            ),
+                        int.Parse(lv.SubItems[9].Text),
+                        int.Parse(lv.SubItems[10].Text)
+                        );
             TicketInformation ticketForm = new TicketInformation(ticket);
             ticketForm.Show();
         }
@@ -174,7 +195,8 @@ namespace enter_to_sqlite
             CitiesForm citiesForm = new CitiesForm(cities, db);
             if (citiesForm.ShowDialog() == DialogResult.Cancel)
             {
-                refreshComboBox();
+                cities = citiesForm.list;
+                refreshComboBox(cities);
             }
 
         }

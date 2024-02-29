@@ -12,7 +12,7 @@ namespace enter_to_sqlite.Forms
 {
     public partial class CitiesForm : Form
     {
-        private List<City> list = new List<City>();
+        public List<City> list = new List<City>();
         private DataBase db;
         public CitiesForm(List<City> currentCities, DataBase db)
         {
