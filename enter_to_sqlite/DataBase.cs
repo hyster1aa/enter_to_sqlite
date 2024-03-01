@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using enter_to_sqlite.BackUpClasses;
 using Microsoft.Data.Sqlite;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
 
@@ -164,7 +166,25 @@ namespace enter_to_sqlite
                 }
             }
         }
-
+        public List<BackUpRoutes> getRoutes()
+        {
+            openConnection();
+            List<BackUpRoutes> list = new List<BackUpRoutes>();
+            SqliteCommand selectSQL = new SqliteCommand("SELECT * FROM Routes", connection);
+            selectSQL.CommandType = CommandType.Text;
+            using(SqliteDataReader reader = selectSQL.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        list.Add(new BackUpRoutes(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2)));
+                    }
+                }
+            }
+            closeConnection();
+            return list;
+        }
         public List<ScheduleItem> schedule = new List<ScheduleItem>();
         public void getSchedule ()
         {
@@ -173,7 +193,7 @@ namespace enter_to_sqlite
                 SqliteCommand command = connection.CreateCommand();
                 command.Connection = connection;
                 command.CommandText = "SELECT schedule.type_train, schedule.date_start, schedule.time_start, " +
-                                            "dep_city.name_city AS dep_city_name, arr_city.name_city AS arr_city_name, schedule.time_travel, Routes.id_route, schedule.id_travel " +
+                                            "dep_city.name_city AS dep_city_name, arr_city.name_city AS arr_city_name, schedule.time_travel, Routes.id_route, schedule.id_travel, schedule.id_train " +
                                         "FROM schedule " +
                                             "INNER JOIN Routes ON schedule.id_route = Routes.id_route " +
                                             "LEFT JOIN cities AS dep_city ON Routes.dep_point = dep_city.id_city " +
@@ -184,7 +204,7 @@ namespace enter_to_sqlite
                     {
                         while (reader.Read())
                         {
-                            schedule.Add(new ScheduleItem (reader.GetInt32(7),reader.GetString(0), new Routes(reader.GetInt32(6),reader.GetString(3), reader.GetString(4)),reader.GetString(2), reader.GetString(1),reader.GetString(5)));
+                            schedule.Add(new ScheduleItem (reader.GetInt32(7),reader.GetInt32(8),reader.GetString(0), new Routes(reader.GetInt32(6),reader.GetString(3), reader.GetString(4)),reader.GetString(2), reader.GetString(1),reader.GetString(5)));
                         }
                     }
                 }
@@ -232,7 +252,8 @@ namespace enter_to_sqlite
                                             " Routes.id_route, " + //11
                                             "schedule.id_travel, " + //12
                                             "tickets.id_ticket, " + //13
-                                            "passengers.id_p " + //14
+                                            "passengers.id_p, " + //14
+                                            "schedule.id_train " + //15
                                         "FROM tickets " +
                                             "INNER JOIN passengers ON tickets.id_p = passengers.id_p " +
                                             "INNER JOIN schedule ON tickets.id_travel = schedule.id_travel " +
@@ -247,7 +268,7 @@ namespace enter_to_sqlite
                         {
                             Ticket ticket = new Ticket( reader.GetInt32(13),
                                 new Passenger( reader.GetInt32(14), reader.GetString(0), reader.GetString(1), reader.GetBoolean(2) ),
-                                new ScheduleItem( reader.GetInt32(12),reader.GetString(3), new Routes(reader.GetInt32(11),reader.GetString(4),reader.GetString(5)),reader.GetString(6),reader.GetString(7), reader.GetString(8) )
+                                new ScheduleItem( reader.GetInt32(12), reader.GetInt32(15),reader.GetString(3), new Routes(reader.GetInt32(11),reader.GetString(4),reader.GetString(5)),reader.GetString(6),reader.GetString(7), reader.GetString(8) )
                                 ,reader.GetInt32(9),reader.GetInt32(10));
                             tickets.Add(ticket);
                         }

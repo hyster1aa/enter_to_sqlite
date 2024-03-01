@@ -65,6 +65,7 @@
             scheduleTimeStart = new ColumnHeader();
             schDepPoint = new ColumnHeader();
             schArrPoint = new ColumnHeader();
+            saveFileDialog1 = new SaveFileDialog();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox1.SuspendLayout();
@@ -365,6 +366,7 @@
             Controls.Add(label2);
             Name = "Form1";
             Text = "Form1";
+            FormClosing += Form1_FormClosing;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             groupBox1.ResumeLayout(false);
@@ -413,5 +415,6 @@
         private Button formPaths;
         private Button formCities;
         private Button formTickets;
+        private SaveFileDialog saveFileDialog1;
     }
 }

@@ -5,6 +5,9 @@ using System.Runtime.CompilerServices;
 using enter_to_sqlite.UI.Diaglos;
 using enter_to_sqlite.Forms;
 using enter_to_sqlite.UI.Forms;
+using Newtonsoft.Json;
+using enter_to_sqlite.BackUpClasses;
+using System.Windows.Forms;
 
 namespace enter_to_sqlite
 {
@@ -21,6 +24,10 @@ namespace enter_to_sqlite
             InitializeComponent();
             db.initTables();
 
+            string jsonString = File.ReadAllText("backup.json");
+            var backUp = JsonConvert.DeserializeObject<YoptaCheck>(jsonString);
+
+
             db.openConnection();
             cities = db.getCities();
             refreshComboBox(cities);
@@ -34,6 +41,10 @@ namespace enter_to_sqlite
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
             db.openConnection();
+            db.getUsers();
+            passengers = db.passengers;
+
+            db.openConnection();
             db.getSchedule();
             schedule = db.schedule;
             initSchedule(schedule);
@@ -42,7 +53,6 @@ namespace enter_to_sqlite
         }
         private void refreshComboBox(List<City> cities)
         {
-            db.openConnection();
 
             cbDepPoint.Items.Clear();
             cbDepPoint.Items.Add("");
@@ -170,15 +180,16 @@ namespace enter_to_sqlite
                                     lv.SubItems[2].Text.Contains("Да") ? true : false
                                 ),
                         new ScheduleItem(
-                                tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.id,
-                                lv.SubItems[3].Text, 
+                                tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.id_travel,
+                                tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.id_train,
+                                lv.SubItems[3].Text,
                                     new Routes(
                                         tickets[listView1.Items
                                             .IndexOf(listView1.SelectedItems[0])]
                                             .travelInformation.routes.id_route,
                                         lv.SubItems[4].Text,
                                         lv.SubItems[5].Text
-                                    ), 
+                                    ),
                                 lv.SubItems[6].Text,
                                 lv.SubItems[7].Text,
                                 lv.SubItems[8].Text
@@ -208,6 +219,24 @@ namespace enter_to_sqlite
             {
 
             }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            var backupschedule = new List<BackUpSchedule>();
+            foreach (var item in schedule)
+            {
+                backupschedule.Add(new BackUpSchedule(item.id_travel, item.id_train, item.routes.id_route, item.typeTrain, item.timeStart, item.timeTravel, item.dateStart));
+            }
+            var backuptickets = new List<BackUpTickets>();
+            foreach (var item in tickets)
+            {
+                backuptickets.Add(new BackUpTickets(item.id_ticket, item.travelInformation.id_travel, item.passenger.id_p, item.trainCarNumber, item.trainCarPlaceNumber));
+            }
+
+            var jf = JsonConvert.SerializeObject(new YoptaCheck(cities, passengers, db.getRoutes(), backupschedule, backuptickets));
+            File.WriteAllText("backup.json", jf);
+
         }
     }
 }
