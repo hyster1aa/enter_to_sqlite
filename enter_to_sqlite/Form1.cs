@@ -24,7 +24,7 @@ namespace enter_to_sqlite
             db.initTables();
 
             string jsonString = File.ReadAllText("backup.json");
-            var backUp = JsonConvert.DeserializeObject<BackUp>(jsonString);
+            var backUp = JsonConvert.DeserializeObject<BackUpRename>(jsonString);
 
             db.openConnection();
             cities = db.getCities();
@@ -234,7 +234,7 @@ namespace enter_to_sqlite
                 backuptickets.Add(new BackUpTickets(item.id_ticket, item.travelInformation.id_travel, item.passenger.id_p, item.trainCarNumber, item.trainCarPlaceNumber));
             }
 
-            var jf = JsonConvert.SerializeObject(new BackUp(cities, passengers, db.getRoutes(), backupschedule, backuptickets));
+            var jf = JsonConvert.SerializeObject(new BackUpRename(cities, passengers, db.getRoutes(), backupschedule, backuptickets));
             File.WriteAllText("backup.json", jf);
 
         }
