@@ -26,7 +26,7 @@ namespace enter_to_sqlite
 
             string jsonString = File.ReadAllText("backup.json");
             var backUp = JsonConvert.DeserializeObject<YoptaCheck>(jsonString);
-
+            //asfkshjafjkashfhasjkfhajkfhasjkfhasjkfhakafahfjkashfqwjkasuir
 
             db.openConnection();
             cities = db.getCities();
