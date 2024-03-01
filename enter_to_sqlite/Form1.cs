@@ -14,7 +14,6 @@ namespace enter_to_sqlite
     public partial class Form1 : Form
     {
         DataBase db = new DataBase();
-
         List<City> cities = new List<City>();
         List<Passenger> passengers = new List<Passenger>();
         List<ScheduleItem> schedule = new List<ScheduleItem>();
@@ -29,6 +28,10 @@ namespace enter_to_sqlite
 
             db.openConnection();
             cities = db.getCities();
+            if (backUp.cities.Count > 0 && cities.Count == 0)
+            {
+
+            }
             refreshComboBox(cities);
             cbDepPoint.DisplayMember = "Name";
             cbArrPoint.DisplayMember = "Name";
@@ -48,7 +51,6 @@ namespace enter_to_sqlite
             schedule = db.schedule;
             initSchedule(schedule);
             listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
         }
         private void refreshComboBox(List<City> cities)
         {
@@ -124,7 +126,6 @@ namespace enter_to_sqlite
 
         private void cbDepPoint_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("asfa");
             refreshListViewFilter();
         }
 
