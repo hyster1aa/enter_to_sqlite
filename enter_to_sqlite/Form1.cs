@@ -8,6 +8,7 @@ using enter_to_sqlite.UI.Forms;
 using Newtonsoft.Json;
 using enter_to_sqlite.BackUpClasses;
 using System.Windows.Forms;
+using System;
 
 namespace enter_to_sqlite
 {
@@ -18,6 +19,7 @@ namespace enter_to_sqlite
         List<Passenger> passengers = new List<Passenger>();
         List<ScheduleItem> schedule = new List<ScheduleItem>();
         List<Ticket> tickets = new List<Ticket>();
+        List<Route> routes = new List<Route>();
         public Form1()
         {
             InitializeComponent();
@@ -25,30 +27,87 @@ namespace enter_to_sqlite
 
             string jsonString = File.ReadAllText("backup.json");
             var backUp = JsonConvert.DeserializeObject<BackUpRename>(jsonString);
-
+            button2.Enabled = false;
+            button3.Enabled = false;
             db.openConnection();
             cities = db.getCities();
-            if (backUp.cities.Count > 0 && cities.Count == 0)
-            {
-
-            }
-            refreshComboBox(cities);
-            cbDepPoint.DisplayMember = "Name";
-            cbArrPoint.DisplayMember = "Name";
 
             db.openConnection();
-            db.getTickets();
-            tickets = db.tickets;
-            initListView(tickets);
-            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            tickets = db.getTickets();
 
             db.openConnection();
             db.getUsers();
             passengers = db.passengers;
 
             db.openConnection();
-            db.getSchedule();
-            schedule = db.schedule;
+            schedule = db.getSchedule();
+
+            routes = db.getRoutes();
+            if (backUp.cities.Count > cities.Count)
+            {
+                foreach (var item in backUp.cities)
+                {
+                    if (!cities.Any(city => city.Id == item.Id))
+                    {
+                        cities.Add(item);
+                        db.initTableCities(item);
+                    }
+                }
+            }
+            if (backUp.passengers.Count > passengers.Count)
+            {
+                foreach (var item in backUp.passengers)
+                {
+                    if (!passengers.Any(passenger => passenger.id_p == item.id_p))
+                    {
+                        passengers.Add(item);
+                        db.initTableUsers(item);
+                    }
+                }
+            }
+            if (backUp.routes.Count > routes.Count)
+            {
+                foreach (var item in backUp.routes)
+                {
+                    if (!routes.Any(routeItem => routeItem.id_route == item.id_route))
+                    {
+                        db.initTableRoutes(item);
+                    }
+                }
+                routes = db.getRoutes();
+            }
+            if (backUp.schedule.Count > schedule.Count)
+            {
+                foreach (var item in backUp.schedule)
+                {
+                    if (!schedule.Any(scheduleItem => scheduleItem.id_travel == item.id_travel))
+                    {
+                        db.initTableSchedule(item);
+                    }
+                }
+                db.openConnection();
+                schedule = db.getSchedule();
+            }
+            if (backUp.tickets.Count > tickets.Count)
+            {
+                foreach (var item in backUp.tickets)
+                {
+                    if (!tickets.Any(ticket => ticket.id_ticket == item.id_ticket))
+                    {
+                        db.initTableTicket(item);
+                    }
+                }
+                db.openConnection();
+                tickets = db.getTickets();
+            }
+
+            initListView(tickets);
+            listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+            refreshComboBox(cities);
+            cbDepPoint.DisplayMember = "Name";
+            cbArrPoint.DisplayMember = "Name";
+
             initSchedule(schedule);
             listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
@@ -58,28 +117,30 @@ namespace enter_to_sqlite
             cbDepPoint.Items.Clear();
             cbDepPoint.Items.Add("");
             cbDepPoint.SelectedIndex = 0;
-            cbDepPoint.Items.AddRange(cities.ToArray());
+            cbDepPoint.Items.AddRange(cities.Select(item => item.Name).ToArray());
 
             cbArrPoint.Items.Clear();
             cbArrPoint.Items.Add("");
-            cbArrPoint.Items.AddRange(cities.ToArray());
+            cbArrPoint.Items.AddRange(cities.Select(item => item.Name).ToArray());
             cbArrPoint.SelectedIndex = 0;
         }
         private void initSchedule(List<ScheduleItem> schedule)
         {
+            listView2.Items.Clear();
             foreach (var item in schedule)
             {
-                ListViewItem rowlv = new ListViewItem(new[] { item.typeTrain, item.dateStart, item.timeStart, item.routes.depPoint, item.routes.arrPoint });
+                ListViewItem rowlv = new ListViewItem(new[] { item.typeTrain, item.dateStart, item.timeStart, item.routes.depPoint.Name, item.routes.arrPoint.Name });
                 listView2.Items.Add(rowlv);
             }
         }
         private void initListView(List<Ticket> tickets)
         {
+            listView1.Items.Clear();
             foreach (var ticket in tickets)
             {
                 ListViewItem rowLv = new ListViewItem(new[] {ticket.passenger.full_name,ticket.passenger.passport,
                 ticket.passenger.benefit ? "Да" : "Нет", ticket.travelInformation.typeTrain,
-                ticket.travelInformation.routes.depPoint,ticket.travelInformation.routes.arrPoint, ticket.travelInformation.timeStart,
+                ticket.travelInformation.routes.depPoint.Name,ticket.travelInformation.routes.arrPoint.Name, ticket.travelInformation.timeStart,
                 ticket.travelInformation.dateStart, ticket.travelInformation.timeTravel,
                 ticket.trainCarNumber.ToString(), ticket.trainCarPlaceNumber.ToString() });
                 listView1.Items.Add(rowLv);
@@ -88,25 +149,25 @@ namespace enter_to_sqlite
 
         private void refreshListViewFilter()
         {
-            listView1.Items.Clear();
-            List<Ticket> tickets = new List<Ticket>();
-            foreach (var item in db.tickets.Where(item => item.travelInformation.routes.depPoint.Contains(cbDepPoint.SelectedItem.ToString())
-                                                    && item.travelInformation.routes.arrPoint.Contains(cbArrPoint.SelectedItem.ToString())
+
+            List<Ticket> ticketsWithFilter = new List<Ticket>();
+            foreach (var item in tickets.Where(item => item.travelInformation.routes.depPoint.Name.Contains(cbDepPoint.SelectedItem.ToString())
+                                                    && item.travelInformation.routes.arrPoint.Name.Contains(cbArrPoint.SelectedItem.ToString())
                                                     && (tbDateTravelMask.Text.StartsWith(' ') ? (item.travelInformation.dateStart.Contains(""))
                                                             : (item.travelInformation.dateStart.Contains(tbDateTravelMask.Text)))
                                                 ))
             {
                 if (benefitCheck.Checked && item.passenger.benefit)
                 {
-                    tickets.Add(item);
+                    ticketsWithFilter.Add(item);
                     continue;
                 }
                 else if (!benefitCheck.Checked)
                 {
-                    tickets.Add(item);
+                    ticketsWithFilter.Add(item);
                 }
             }
-            initListView(tickets);
+            initListView(ticketsWithFilter);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -126,12 +187,19 @@ namespace enter_to_sqlite
 
         private void cbDepPoint_SelectedIndexChanged(object sender, EventArgs e)
         {
-            refreshListViewFilter();
+            if (cbDepPoint.SelectedIndex != -1 && cbArrPoint.SelectedIndex != -1)
+            {
+                refreshListViewFilter();
+            }
+
         }
 
         private void cbArrPoint_SelectedIndexChanged(object sender, EventArgs e)
         {
-            refreshListViewFilter();
+            if (cbDepPoint.SelectedIndex != -1 && cbArrPoint.SelectedIndex != -1)
+            {
+                refreshListViewFilter();
+            }
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -157,12 +225,12 @@ namespace enter_to_sqlite
             Workbook wb = new Workbook();
             Worksheet wsh = wb.Worksheets[0];
             wsh.Cells.ImportArray(new string[] { "Тип поезда", "Пункт отправления", "Пункт прибытия", "Дата отправления", "Время отправления" }, 0, 0, false);
-            wsh.Cells.ImportCustomObjects((System.Collections.ICollection)db.schedule,
+            wsh.Cells.ImportCustomObjects((System.Collections.ICollection)tickets,
                 new string[] { "typeTrain", "depPoint", "arrPoint", "dateStart", "timeStart" },
                 false,
                 1,
                 0,
-                db.schedule.Count,
+                schedule.Count,
                 true,
                 null,
                 false);
@@ -183,12 +251,12 @@ namespace enter_to_sqlite
                                 tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.id_travel,
                                 tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.id_train,
                                 lv.SubItems[3].Text,
-                                    new Routes(
+                                    new Route(
                                         tickets[listView1.Items
                                             .IndexOf(listView1.SelectedItems[0])]
                                             .travelInformation.routes.id_route,
-                                        lv.SubItems[4].Text,
-                                        lv.SubItems[5].Text
+                                        tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.routes.depPoint,
+                                        tickets[listView1.Items.IndexOf(listView1.SelectedItems[0])].travelInformation.routes.arrPoint
                                     ),
                                 lv.SubItems[6].Text,
                                 lv.SubItems[7].Text,
@@ -214,10 +282,14 @@ namespace enter_to_sqlite
 
         private void formPaths_Click(object sender, EventArgs e)
         {
-            PathForm pathsForm = new PathForm();
+            db.openConnection();
+            routes = db.getRoutes();
+            PathForm pathsForm = new PathForm(db, routes, cities, schedule);
             if (pathsForm.ShowDialog() == DialogResult.Cancel)
             {
-
+                routes = pathsForm.routes;
+                db.openConnection();
+                initSchedule(db.getSchedule());
             }
         }
 
@@ -233,10 +305,80 @@ namespace enter_to_sqlite
             {
                 backuptickets.Add(new BackUpTickets(item.id_ticket, item.travelInformation.id_travel, item.passenger.id_p, item.trainCarNumber, item.trainCarPlaceNumber));
             }
-
-            var jf = JsonConvert.SerializeObject(new BackUpRename(cities, passengers, db.getRoutes(), backupschedule, backuptickets));
+            var backupRoutes = new List<BackUpRoutes>();
+            foreach (var item in routes)
+            {
+                backupRoutes.Add(new BackUpRoutes(item.id_route, item.depPoint.Id, item.arrPoint.Id));
+            }
+            var jf = JsonConvert.SerializeObject(new BackUpRename(cities, passengers, backupRoutes, backupschedule, backuptickets));
             File.WriteAllText("backup.json", jf);
 
+        }
+
+        private void formSchedule_Click(object sender, EventArgs e)
+        {
+            ScheduleForm scheduleForm = new ScheduleForm(schedule, routes, db, tickets);
+            if (scheduleForm.ShowDialog() == DialogResult.Cancel)
+            {
+                initSchedule(schedule);
+            }
+        }
+
+        private void formUsers_Click(object sender, EventArgs e)
+        {
+            PassengersForm passForm = new PassengersForm(passengers, db, tickets);
+            if (passForm.ShowDialog() == DialogResult.Cancel)
+            {
+                tickets = db.getTickets();
+                initListView(tickets);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            TicketDialogForm ticketDialogForm = new TicketDialogForm(schedule, db, passengers, tickets, null);
+            if (ticketDialogForm.ShowDialog() == DialogResult.OK)
+            {
+                var item = ticketDialogForm.ticket;
+                tickets.Add(item);
+                listView1.Items.Add(new ListViewItem(new string[] { item.passenger.full_name, item.passenger.passport, item.passenger.benefit ? "Да" : "Нет", item.travelInformation.typeTrain, item.travelInformation.routes.depPoint.Name, item.travelInformation.routes.arrPoint.Name, item.travelInformation.timeStart, item.travelInformation.dateStart, item.travelInformation.timeTravel, item.trainCarNumber.ToString(), item.trainCarPlaceNumber.ToString() }));
+
+            }
+
+        }
+
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int index = listView1.Items.IndexOf(listView1.SelectedItems[0]);
+            TicketDialogForm ticketDialogForm = new TicketDialogForm(schedule, db, passengers, tickets, tickets[index]);
+            if (ticketDialogForm.ShowDialog() == DialogResult.OK)
+            {
+                var item = ticketDialogForm.ticket;
+                tickets[index] = ticketDialogForm.ticket;
+                listView1.Items[index] = new ListViewItem(new string[] { item.passenger.full_name, item.passenger.passport, item.passenger.benefit ? "Да" : "Нет", item.travelInformation.typeTrain, item.travelInformation.routes.depPoint.Name, item.travelInformation.routes.arrPoint.Name, item.travelInformation.timeStart, item.travelInformation.dateStart, item.travelInformation.timeTravel, item.trainCarNumber.ToString(), item.trainCarPlaceNumber.ToString() });
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            int index = listView1.Items.IndexOf(listView1.SelectedItems[0]);
+            db.deleteTicket(tickets[index].id_ticket);
+            tickets.RemoveAt(index);
+            listView1.Items.RemoveAt(index);
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedIndices.Count > 0)
+            {
+                button2.Enabled = true;
+                button3.Enabled = true;
+            } else
+            {
+                button2.Enabled = false;
+                button3.Enabled = false;
+            }
         }
     }
 }
