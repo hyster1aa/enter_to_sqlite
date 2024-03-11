@@ -11,11 +11,11 @@ namespace enter_to_sqlite
         public int id_travel { get; set; }
         public int id_train { get; set;  }
         public string typeTrain { get; set; }
-        public Routes routes { get; set; }
+        public Route routes { get; set; }
         public string timeStart { get; set; }
         public string dateStart { get; set; }
         public string timeTravel { get; set; }
-        public ScheduleItem(int id_travel, int id_train, string typeTrain, Routes routes, string timeStart, string dateStart, string timeTravel)
+        public ScheduleItem(int id_travel, int id_train, string typeTrain, Route routes, string timeStart, string dateStart, string timeTravel)
         {
             this.id_travel = id_travel;
             this.id_train = id_train;
@@ -24,6 +24,10 @@ namespace enter_to_sqlite
             this.timeStart = timeStart;
             this.dateStart = dateStart;
             this.timeTravel = timeTravel;
+        }
+        public string ToString
+        {
+            get { return $"{this.routes.ToString} - {this.timeStart} - {this.dateStart} - {this.timeTravel}"; }
         }
     }
 }

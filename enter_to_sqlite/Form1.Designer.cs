@@ -50,8 +50,10 @@
             cbArrPoint = new ComboBox();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            button3 = new Button();
+            button2 = new Button();
+            button1 = new Button();
             groupBox1 = new GroupBox();
-            formTickets = new Button();
             formUsers = new Button();
             tabPage2 = new TabPage();
             panel1 = new Panel();
@@ -107,12 +109,13 @@
             listView1.Dock = DockStyle.Bottom;
             listView1.FullRowSelect = true;
             listView1.GridLines = true;
-            listView1.Location = new Point(3, 119);
+            listView1.Location = new Point(3, 150);
             listView1.Name = "listView1";
-            listView1.Size = new Size(813, 325);
+            listView1.Size = new Size(813, 294);
             listView1.TabIndex = 7;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.Details;
+            listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
             listView1.MouseDoubleClick += listView1_MouseDoubleClick;
             // 
             // passengerName
@@ -218,6 +221,9 @@
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(button3);
+            tabPage1.Controls.Add(button2);
+            tabPage1.Controls.Add(button1);
             tabPage1.Controls.Add(groupBox1);
             tabPage1.Controls.Add(listView1);
             tabPage1.Location = new Point(4, 24);
@@ -228,9 +234,41 @@
             tabPage1.Text = "Билеты";
             tabPage1.UseVisualStyleBackColor = true;
             // 
+            // button3
+            // 
+            button3.Dock = DockStyle.Left;
+            button3.Location = new Point(257, 113);
+            button3.Name = "button3";
+            button3.Size = new Size(127, 37);
+            button3.TabIndex = 18;
+            button3.Text = "Удалить";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
+            // button2
+            // 
+            button2.Dock = DockStyle.Left;
+            button2.Location = new Point(130, 113);
+            button2.Name = "button2";
+            button2.Size = new Size(127, 37);
+            button2.TabIndex = 17;
+            button2.Text = "Изменить";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
+            // button1
+            // 
+            button1.Dock = DockStyle.Left;
+            button1.Location = new Point(3, 113);
+            button1.Name = "button1";
+            button1.Size = new Size(127, 37);
+            button1.TabIndex = 16;
+            button1.Text = "Добавить";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(formTickets);
             groupBox1.Controls.Add(formUsers);
             groupBox1.Controls.Add(label1);
             groupBox1.Controls.Add(cbDepPoint);
@@ -246,15 +284,6 @@
             groupBox1.TabIndex = 15;
             groupBox1.TabStop = false;
             // 
-            // formTickets
-            // 
-            formTickets.Location = new Point(689, 64);
-            formTickets.Name = "formTickets";
-            formTickets.Size = new Size(121, 40);
-            formTickets.TabIndex = 15;
-            formTickets.Text = "Управление билетами";
-            formTickets.UseVisualStyleBackColor = true;
-            // 
             // formUsers
             // 
             formUsers.Location = new Point(689, 15);
@@ -263,6 +292,7 @@
             formUsers.TabIndex = 14;
             formUsers.Text = "Управление пользователями";
             formUsers.UseVisualStyleBackColor = true;
+            formUsers.Click += formUsers_Click;
             // 
             // tabPage2
             // 
@@ -305,6 +335,7 @@
             formSchedule.TabIndex = 2;
             formSchedule.Text = "Управление расписанием";
             formSchedule.UseVisualStyleBackColor = true;
+            formSchedule.Click += formSchedule_Click;
             // 
             // formPaths
             // 
@@ -414,7 +445,9 @@
         private Button formSchedule;
         private Button formPaths;
         private Button formCities;
-        private Button formTickets;
         private SaveFileDialog saveFileDialog1;
+        private Button button3;
+        private Button button2;
+        private Button button1;
     }
 }

@@ -14,5 +14,9 @@ namespace enter_to_sqlite
             this.Id= Id;
             this.Name= Name;
         }
+        public bool Equals(City city)
+        {
+            return (this.Id == city.Id && this.Name == city.Name);
+        }
     }
 }
