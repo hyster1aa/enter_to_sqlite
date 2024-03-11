@@ -25,14 +25,18 @@ namespace enter_to_sqlite.UI.Diaglos
             this.passengers = passengers;
             this.tickets = tickets;
             this.ticket = ticket;
-            if(this.ticket != null)
-            {
-
-            }
             comboBox1.DisplayMember = "ToString";
             comboBox2.DisplayMember = "full_name";
             comboBox2.Items.AddRange(passengers.ToArray());
             comboBox1.Items.AddRange(schedule.ToArray());
+            if (this.ticket != null)
+            {
+                textBox1.Text = ticket.trainCarPlaceNumber.ToString();
+                textBox2.Text = ticket.trainCarNumber.ToString();
+                comboBox1.SelectedIndex = tickets.FindIndex(item => item.travelInformation.routes.id_route.Equals(ticket.travelInformation.routes.id_route));
+                comboBox2.SelectedIndex = tickets.FindIndex(item => item.passenger.id_p.Equals(ticket.passenger.id_p));
+            }
+            
         }
        
 

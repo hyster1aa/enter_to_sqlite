@@ -25,8 +25,7 @@ namespace enter_to_sqlite
             InitializeComponent();
             db.initTables();
 
-            string jsonString = File.ReadAllText("backup.json");
-            var backUp = JsonConvert.DeserializeObject<BackUpRename>(jsonString);
+           
             button2.Enabled = false;
             button3.Enabled = false;
             db.openConnection();
@@ -43,63 +42,70 @@ namespace enter_to_sqlite
             schedule = db.getSchedule();
 
             routes = db.getRoutes();
-            if (backUp.cities.Count > cities.Count)
+            if (File.Exists("backup.json"))
             {
-                foreach (var item in backUp.cities)
+                string jsonString = File.ReadAllText("backup.json");
+                var backUp = JsonConvert.DeserializeObject<BackUpRename>(jsonString);
+
+                if (backUp.cities.Count > cities.Count)
                 {
-                    if (!cities.Any(city => city.Id == item.Id))
+                    foreach (var item in backUp.cities)
                     {
-                        cities.Add(item);
-                        db.initTableCities(item);
+                        if (!cities.Any(city => city.Id == item.Id))
+                        {
+                            cities.Add(item);
+                            db.initTableCities(item);
+                        }
                     }
                 }
-            }
-            if (backUp.passengers.Count > passengers.Count)
-            {
-                foreach (var item in backUp.passengers)
+                if (backUp.passengers.Count > passengers.Count)
                 {
-                    if (!passengers.Any(passenger => passenger.id_p == item.id_p))
+                    foreach (var item in backUp.passengers)
                     {
-                        passengers.Add(item);
-                        db.initTableUsers(item);
+                        if (!passengers.Any(passenger => passenger.id_p == item.id_p))
+                        {
+                            passengers.Add(item);
+                            db.initTableUsers(item);
+                        }
                     }
                 }
-            }
-            if (backUp.routes.Count > routes.Count)
-            {
-                foreach (var item in backUp.routes)
+                if (backUp.routes.Count > routes.Count)
                 {
-                    if (!routes.Any(routeItem => routeItem.id_route == item.id_route))
+                    foreach (var item in backUp.routes)
                     {
-                        db.initTableRoutes(item);
+                        if (!routes.Any(routeItem => routeItem.id_route == item.id_route))
+                        {
+                            db.initTableRoutes(item);
+                        }
                     }
+                    routes = db.getRoutes();
                 }
-                routes = db.getRoutes();
-            }
-            if (backUp.schedule.Count > schedule.Count)
-            {
-                foreach (var item in backUp.schedule)
+                if (backUp.schedule.Count > schedule.Count)
                 {
-                    if (!schedule.Any(scheduleItem => scheduleItem.id_travel == item.id_travel))
+                    foreach (var item in backUp.schedule)
                     {
-                        db.initTableSchedule(item);
+                        if (!schedule.Any(scheduleItem => scheduleItem.id_travel == item.id_travel))
+                        {
+                            db.initTableSchedule(item);
+                        }
                     }
+                    db.openConnection();
+                    schedule = db.getSchedule();
                 }
-                db.openConnection();
-                schedule = db.getSchedule();
-            }
-            if (backUp.tickets.Count > tickets.Count)
-            {
-                foreach (var item in backUp.tickets)
+                if (backUp.tickets.Count > tickets.Count)
                 {
-                    if (!tickets.Any(ticket => ticket.id_ticket == item.id_ticket))
+                    foreach (var item in backUp.tickets)
                     {
-                        db.initTableTicket(item);
+                        if (!tickets.Any(ticket => ticket.id_ticket == item.id_ticket))
+                        {
+                            db.initTableTicket(item);
+                        }
                     }
+                    db.openConnection();
+                    tickets = db.getTickets();
                 }
-                db.openConnection();
-                tickets = db.getTickets();
             }
+            
 
             initListView(tickets);
             listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
@@ -329,6 +335,7 @@ namespace enter_to_sqlite
             PassengersForm passForm = new PassengersForm(passengers, db, tickets);
             if (passForm.ShowDialog() == DialogResult.Cancel)
             {
+                db.openConnection();
                 tickets = db.getTickets();
                 initListView(tickets);
             }

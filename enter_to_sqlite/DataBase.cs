@@ -16,7 +16,7 @@ namespace enter_to_sqlite
 {
     public class DataBase
     {
-        SqliteConnection connection = new SqliteConnection("DataSource=newdb.db");
+        SqliteConnection connection = new SqliteConnection("DataSource=myTodoList.db");
         public List<Passenger> passengers = new List<Passenger>();
         public void openConnection()
         {
